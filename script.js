@@ -84,7 +84,7 @@ const stationsMontreal = [
         tuning: "100,7",
         name: "ICI Musique - Montréal",
         url: "  https://playerservices.streamtheworld.com/api/livestream-redirect/CBFXFM_SRC.mp3",
-        logo: "https://th.bing.com/th/id/OIP.lRfpQPAqQD76xGEvOGQysAAAAA?w=118&h=50&c=7&r=0&o=5&pid=1.7"
+        logo: "https://www.radio.fr/images/broadcasts/6f/52/36091/1/c300.png"
     },
     {
         tuning: "105,7",
@@ -105,13 +105,13 @@ const stationsQuebec = [
         tuning: "92,7",
         name: "Radio-Classique - Québec (CJSQ-FM)",
         url: " https://www.radioking.com/play/radio-classique-quebec-92-7",
-        logo: "https://www.radioclassique.ca/upload/players/5e3c736c225953.40751304.png"
+        logo: "https://www.radioclassique.ca/upload/design/5d1cc4fcaad749.59987287.png"
     },
     {
         tuning: "95,3",
         name: "ICI Musique - Québec",
         url: " https://playerservices.streamtheworld.com/api/livestream-redirect/CBVXFM_SRC.mp3",
-        logo: "https://cdn-profiles.tunein.com/s12490/images/logod.png?t=637552187150000000"
+        logo: "https://static2.mytuner.mobi/media/tvos_radios/MWVRWWbeEa.jpg"
     },
     {
         tuning: "98,1",
@@ -159,7 +159,7 @@ const stationsMauricie = [
         tuning: "96,5",
         name: "ICI Radio-Canada Première Mauricie - Centre-du-Québec",
         url: " https://playerservices.streamtheworld.com/api/livestream-redirect/CBFFM8_SRC.mp3",
-        logo: "https://th.bing.com/th/id/OIP.yPjxwW0z-vxjF6KX4odZNQHaB5?w=336&h=89&c=7&r=0&o=5&pid=1.7"
+        logo: "https://www.radio.fr/images/broadcasts/54/96/100369/3/c300.png"
     },
     {
         tuning: "98,1",
@@ -202,6 +202,31 @@ const stationsOttawa = [
 
     
 ];
+const stationsRimouski = [
+    {
+        tuning: "93",
+        name: "FM93 Rimouski (CFYX-FM)",
+        url: " https://stream.statsradio.com:8048/stream",
+        logo: "https://www.cfyxrimouski.com/assets/img/logo-cfyx.png",
+        page: "https://www.cfyxrimouski.com/"
+    },
+    {
+        tuning: "98,7",
+        name: "Energie Rimouski (CIKI-FM)",
+        url: "https://playerservices.streamtheworld.com/api/livestream-redirect/CIKIFM_ADP.aac",
+        logo: "https://www.radioenergie.ca/content/dam/audio/iheart-stations-logos/logo-nrj-rimouski.svg",
+        page: "https://www.radioenergie.ca/rimouski.html"
+    },
+    {
+        tuning: "102,9",
+        name: "Rouge FM Rimouski (CJOI-FM)",
+        url: " https://playerservices.streamtheworld.com/api/livestream-redirect/CJOIFM_ADP.aac",
+        logo: "https://www.rougefm.ca/content/dam/audio/iheart-stations-logos/logo-rougefm-rimouski.svg",
+        page: "https://www.rougefm.ca/rimouski.html"
+    },
+
+    
+];
 const stationList = document.getElementById('stationList');
 const frequencyTicks = document.getElementById('frequencyTicks');
 const audioPlayer = document.getElementById('audioPlayer');
@@ -210,24 +235,19 @@ const frequencyDisplay = document.getElementById('frequencyDisplay');
 const regionSelector = document.getElementById('regionSelector');
 let currentActive = null;
 let stations = [];
+const regionsList = {
+    'Saguenay': stationsSaguenay,
+    'Montreal': stationsMontreal,
+    'Quebec': stationsQuebec,
+    'Sherbrooke': stationsSherbrooke,
+    'Mauricie': stationsMauricie,
+    'Ottawa': stationsOttawa,
+    'Rimouski': stationsRimouski,
+    // Ajoutez d'autres régions ici
+};
+
 function getStationsForRegion(regionName) {
-    switch(regionName) {
-        case 'Saguenay':
-            return stationsSaguenay;
-        case 'Montreal':
-            return stationsMontreal;
-        case 'Quebec':
-            return stationsQuebec;
-        case 'Sherbrooke':
-            return stationsSherbrooke;
-        case 'Mauricie':
-            return stationsMauricie;
-        case 'Ottawa':
-            return stationsOttawa;
-        // Add other cases for other regions
-        default:
-            return [];
-    }
+    return regionsList[regionName] || [];
 }
 // Fonction pour charger les stations en fonction de la région sélectionnée
 function loadStations(region) {
@@ -247,7 +267,7 @@ function loadStations(region) {
                             <img class="station-logo" src="${station.logo}" alt="${station.name}" title="${station.name}">
                         </figure>
                       </span>
-                      <div class="station-name">${station.name}</div>`;
+                      <div style="font-size: x-small;"; class="station-name">${station.name}</div>`;
         listItem.addEventListener('click', () => {
             setActiveStation(index);
         });
@@ -281,16 +301,54 @@ function setActiveStation(index) {
     listItem.classList.add('station-active');
     currentActive = listItem;
 
-    // Changer la source de l'audio et jouer
+    // Changer la source de l'audio
     audioPlayer.src = stations[index].url;
-    audioPlayer.play();
+
+    // Vérifier si l'utilisateur a déjà interagi avec le document
+    if (document.readyState === "interactive" || document.readyState === "complete") {
+        // Si le document est déjà interactif ou complet, jouer l'audio
+        audioPlayer.play().then(() => {
+            // Mettre à jour les contrôles si la lecture réussit
+            document.querySelector('.controls').classList.remove('pause', 'stop');
+            document.querySelector('.controls').classList.add('playing');
+        }).catch(error => {
+            console.error("Erreur lors de la lecture de l'audio:", error);
+        });
+    } else {
+        // Si le document n'est pas encore interactif, attendre l'interaction utilisateur
+        document.addEventListener('click', function playAudioOnce() {
+            audioPlayer.play().then(() => {
+                // Mettre à jour les contrôles si la lecture réussit
+                document.querySelector('.controls').classList.remove('pause', 'stop');
+                document.querySelector('.controls').classList.add('playing');
+            }).catch(error => {
+                console.error("Erreur lors de la lecture de l'audio:", error);
+            });
+            // Retirer l'événement après la première interaction utilisateur
+            document.removeEventListener('click', playAudioOnce);
+        });
+    }
 
     // Mettre à jour l'affichage de la fréquence
-    // Update the frequency display with the current station's frequency and a volume icon
-frequencyDisplay.innerHTML = `Fréquence: ${stations[index].tuning} MHz  <i class="fas fa-volume-up volume-icon" id="volumeIcon" style="color: #2de22d;"></i>`;
-
+    frequencyDisplay.innerHTML = `Fréquence: ${stations[index].tuning} MHz  <i class="fas fa-volume-up volume-icon" id="volumeIcon" style="color: #2de22d;"></i>`;
     frequencyRange.value = index;
+
+    // Mettre à jour l'affichage du logo de la station active
+    const stationLogo = document.getElementById('stationLogo');
+    // Création de l'élément img avec lien cliquable
+stationLogo.innerHTML = `
+<a href="${stations[index].page}" target="_blank">
+    <img class="station-logo" style="background-color: black;" 
+         src="${stations[index].logo}" 
+         alt="${stations[index].name}" 
+         title="${stations[index].name}">
+</a>
+`;
+
+
 }
+
+
 
 // Écouter les changements de sélection dans le menu déroulant
 regionSelector.addEventListener('change', (event) => {
@@ -320,7 +378,14 @@ document.getElementById('next').addEventListener('click', () => {
         setActiveStation(currentIndex + 1);
     }
 });
-
+document.getElementById('muteVolume').addEventListener('click', () => {
+    
+    audioPlayer.volume = 0;
+});
+document.getElementById('maxVolume').addEventListener('click', () => {
+    
+    audioPlayer.volume = 1;
+});
 // Créer la carte et définir la vue initiale
 var map = L.map('map', {
     center: [48, -70],
@@ -380,6 +445,7 @@ var regions = [
     {name: "Hawkesbury", coords: [45.6070, -74.6044]},
     {name: "La-Pocatiere", coords: [47.3641, -70.0347]},
     {name: "Riviere-du-Loup", coords: [47.8361, -69.5333]},
+    {name: "Rimouski", coords: [48.4487, -68.5239]},
     {name: "Montmagny", coords: [46.9794, -70.5500]},
     {name: "Saint-Georges-de-Beauce", coords: [46.1214, -70.6690]},
     {name: "Baie-Comeau", coords: [49.2167, -68.1500]},
@@ -506,7 +572,7 @@ var recenterControl = L.Control.extend({
     onAdd: function (map) {
         var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom map-button');
 
-        container.innerHTML = 'Recentrer';
+        container.innerHTML = '<i class="fas fa-crosshairs fa-2x"></i>';
         container.style.backgroundColor = 'white';
         container.style.color = 'black';
         container.style.width = 'auto';
@@ -535,6 +601,17 @@ const playIndicator = document.getElementById('playIndicator');
 toggleControlsButton.addEventListener('click', () => {
     audioPlayer.controls = !audioPlayer.controls;
     toggleControlsButton.innerHTML = audioPlayer.controls ? '<i id="toggleIcon" class="fas fa-eye-slash"></i>' : '<i id="toggleIcon" class="fas fa-eye"></i>';
+
+    // Désactiver/activer les boutons play et pause et masquer/afficher le curseur de volume
+    if (audioPlayer.controls) {
+        playButton.classList.add('disabled');
+        pauseButton.classList.add('disabled');
+        volumeSection.classList.add('hidden');
+    } else {
+        playButton.classList.remove('disabled');
+        pauseButton.classList.remove('disabled');
+        volumeSection.classList.remove('hidden');
+    }
 });
 
 playButton.addEventListener('click', () => {
@@ -557,7 +634,15 @@ stopButton.addEventListener('click', () => {
 });
 
 volumeSlider.addEventListener('input', (event) => {
-    audioPlayer.volume = event.target.value;
+    // Si l'audio est en sourdine, désactivez la mise en sourdine
+    if (audioPlayer.muted) {
+        audioPlayer.muted = false;
+    }
+    
+    // Mettez à jour le volume de l'audio en fonction de la valeur du curseur
+    audioPlayer.volume = parseFloat(event.target.value);
+    
+    // Mettez à jour l'icône du volume en fonction de la nouvelle valeur du volume
     updateVolumeIcon(event.target.value);
 });
 // Fonction pour mettre à jour l'icône de volume en fonction du niveau de volume
@@ -591,13 +676,46 @@ function updateFrequencyDisplay() {
         } else {
             displayContent += ' <i class="fas fa-volume-up volume-icon" id="volumeIcon" style="color: #2de22d;"></i>';
         }
-        
+        document.querySelector('.controls').classList.remove('pause', 'stop');
+        document.querySelector('.controls').classList.add('playing');
     }
+    else if(audioPlayer.paused && audioPlayer.currentTime == 0){
+        document.querySelector('.controls').classList.remove('playing', 'pause');
+        document.querySelector('.controls').classList.add('stop');
+    }
+    else{
+        document.querySelector('.controls').classList.remove('playing', 'stop');
+        document.querySelector('.controls').classList.add('pause');
+
+    }
+    
     frequencyDisplay.innerHTML = displayContent;
 }
 // Event listeners for audio play and pause
 audioPlayer.addEventListener('play', updateFrequencyDisplay);
 audioPlayer.addEventListener('pause', updateFrequencyDisplay);
+
+
+
+// Fonction pour mettre à jour le curseur de volume
+function updateVolumeSlider() {
+    // Mettre à jour la position du curseur de volume en fonction du volume actuel de l'audioPlayer
+    volumeSlider.value = audioPlayer.volume;
+    // Si l'audio est en sourdine, définir la valeur du curseur de volume à 0
+    if (audioPlayer.muted) {
+        volumeSlider.value = 0;
+    }
+    updateVolumeIcon(volumeSlider.value);
+}
+
+// Événement input pour détecter les changements sur le curseur de volume
+volumeSlider.addEventListener('input', function() {
+    // Mettre à jour le volume de l'audioPlayer en fonction de la position du curseur
+    audioPlayer.volume = parseFloat(volumeSlider.value);
+});
+
+// Écouter les changements de volume sur l'audioPlayer et mettre à jour le curseur de volume en conséquence
+audioPlayer.addEventListener('volumechange', updateVolumeSlider);
 
 updateFrequencyDisplay();
 
