@@ -412,3 +412,30 @@ button {
     opacity: 0.5;
 }
 
+.bienvenue {
+    text-align: left;
+    font-size: smaller;
+    display: none; /* Démarre caché par défaut */
+}
+
+#texte{
+    background-color: #444;
+    color: #000000;
+    border: 1px solid lightgrey;
+    box-shadow: 1px 1px 1px 1px gray;
+    position: absolute;
+    top: 18px;
+    right: 18px;
+
+    cursor: pointer;
+    border-radius: 10px;
+    transition: background-color 0.3s;
+    font-size: 20px;
+    height: 50px;
+    width: 100px;
+
+    cursor: pointer;
+}
+#texte:hover{
+    background-color: #999999;
+}
