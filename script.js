@@ -775,14 +775,3 @@ audioPlayer.addEventListener('volumechange', updateVolumeSlider);
 
 updateFrequencyDisplay();
 
-// JavaScript pour afficher/cacher le texte
-document.getElementById('texte').addEventListener('click', function() {
-    var bienvenueDiv = document.querySelector('.bienvenue');
-    if (bienvenueDiv.style.display === 'none') {
-        bienvenueDiv.style.display = 'block';
-        this.textContent = 'Cacher le texte'; // Mettre à jour le texte du bouton
-    } else {
-        bienvenueDiv.style.display = 'none';
-        this.textContent = 'Afficher le texte'; // Mettre à jour le texte du bouton
-    }
-});
