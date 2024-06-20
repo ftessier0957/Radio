@@ -52,7 +52,7 @@ button {
     border-radius: 10px;
     border: 5px solid lightgrey;
     cursor: pointer;
-    width: 150px;
+    width: 200px;
     text-align: left;
     display: flex;
     flex-direction: column;
@@ -221,7 +221,12 @@ button {
     border: 0.2px solid #535353;
     max-width: 100px;
     cursor: pointer;
+    padding: 10px;
 }
+.station-logo:hover {
+    background-color: #c7c7c7;
+}
+
 
 .tuner-container {
     background-color: #362e2e;
@@ -289,7 +294,7 @@ button {
 }
 
 .control-buttons button:hover {
-    background-color: #666;
+    background-color: #616161;
 }
 
 /* Styles pour les boutons de navigation avec icônes */
@@ -406,5 +411,4 @@ button {
     pointer-events: none;
     opacity: 0.5;
 }
-
 
